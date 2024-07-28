@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayurvedic Chatbot</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            background-color: #007BFF;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+        }
+        .chat-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .chat-input {
+            display: flex;
+            border-top: 1px solid #ccc;
+            padding: 10px;
+        }
+        .chat-input textarea {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            resize: none;
+            font-size: 16px;
+        }
+        .chat-input button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .chat-input button:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .message.user {
+            align-items: flex-end;
+        }
+        .message.bot {
+            align-items: flex-start;
+        }
+        .message p {
+            background: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 80%;
+        }
+        .message.user p {
+            background: #007BFF;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            Ayurvedic Chatbot
+        </div>
+        <div class="chat-body" id="chatBody">
+            <!-- Chat messages will appear here -->
+        </div>
+        <div class="chat-input">
+            <textarea id="userInput" placeholder="Type your disease here..."></textarea>
+            <button id="sendButton">Send</button>
+            <button id="clearButton">Clear</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('sendButton').addEventListener('click', function() {
+            const userInput = document.getElementById('userInput').value;
+            if (userInput.trim() === '') return;
+
+            addMessage('user', userInput);
+            searchDisease(userInput);
+            document.getElementById('userInput').value = '';
+        });
+
+        document.getElementById('clearButton').addEventListener('click', function() {
+            document.getElementById('userInput').value = '';
+        });
+
+        function addMessage(sender, text) {
+            const chatBody = document.getElementById('chatBody');
+            const message = document.createElement('div');
+            message.classList.add('message', sender);
+            message.innerHTML = `<p>${text}</p>`;
+            chatBody.appendChild(message);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function searchDisease(input) {
+            fetch('/mnt/data/Disease,Symptoms,Ayurvedic Treatment.csv')
+                .then(response => response.text())
+                .then(data => {
+                    const lines = data.split('\n');
+                    const headers = lines[0].split(',');
+                    const diseases = [];
+
+                    for (let i = 1; i < lines.length; i++) {
+                        const fields = lines[i].split(',');
+                        diseases.push({
+                            disease: fields[0].trim(),
+                            symptoms: fields[1].trim(),
+                            treatment: fields[2].trim(),
+                            procedure: fields[3].trim(),
+                            precautions: fields[4].trim()
+                        });
+                    }
+
+                    const foundDisease = diseases.find(d => input.toLowerCase().includes(d.disease.toLowerCase()));
+
+                    if (foundDisease) {
+                        const response = `For ${foundDisease.disease}, the symptoms are: ${foundDisease.symptoms}. The recommended Ayurvedic treatment is: ${foundDisease.treatment} which involves ${foundDisease.procedure}. Precautions to take: ${foundDisease.precautions}.`;
+                        addMessage('bot', response);
+                    } else {
+                        addMessage('bot', `Sorry, I couldn't find any information on your query.`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    addMessage('bot', 'An error occurred while fetching the data.');
+                });
+        }
+    </script>
+</body>
+</html>
