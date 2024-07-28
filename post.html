@@ -124,7 +124,7 @@
         }
 
         function searchDisease(input) {
-            fetch('/mnt/data/Disease,Symptoms,Ayurvedic Treatment.csv')
+            fetch('Disease,Symptoms,Ayurvedic Treatment.csv')
                 .then(response => response.text())
                 .then(data => {
                     const lines = data.split('\n');
