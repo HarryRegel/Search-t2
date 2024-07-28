@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mouse+Memoirs&family=Pacifico&family=Permanent+Marker&family=Poppins:wght@200;300;400;600;700&family=Secular+One&display=swap" rel="stylesheet">
+    <title>TECHINGINE-HOME</title>
+</head>
+<body>
+    <section class="main-header">
+        <nav>
+            <a href="index.html"><img src="logo/main-logo.webp" alt="logo"></a>
+            <div class="navbar">
+                <ul>
+                    <li><a href="index.html">HOME</a></li>
+                    <li><a href="#">POSTS</a></li>
+                    <li><a href="">ABOUT</a></li>
+                    <li><a href="">CONTACT</a></li>
+                </ul>
+            </div>
+        </nav>
+        <section class="search">
+            <div class="searchbar">
+                <h1 class="searchtext">FETCH WHAT YOU NEED !!</h1>
+                <div class="searchbox">
+                    <textarea id="message" placeholder="Type your search query here..."></textarea>
+                    <br>
+                    <button id="searchButton">Search</button>
+                    <div id="results"></div>
+                </div>
+            </div>
+        </section>
+    </section>
+
+    <script>
+        document.getElementById('searchButton').addEventListener('click', function() {
+            const query = document.getElementById('message').value;
+            const apiKey = 'YOUR_GOOGLE_API_KEY';
+            const searchEngineId = '53a28ba5ccbf04f0c'; // Your Custom Search Engine ID
+            const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${encodeURIComponent(query)}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.innerHTML = ''; // Clear previous results
+
+                    if (data.items) {
+                        data.items.forEach(item => {
+                            const resultItem = document.createElement('div');
+                            resultItem.innerHTML = `<h3>${item.title}</h3><p>${item.snippet}</p>`;
+                            resultsDiv.appendChild(resultItem);
+                        });
+                    } else {
+                        resultsDiv.innerHTML = 'No results found.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('results').innerHTML = 'An error occurred while fetching search results.';
+                });
+        });
+    </script>
+</body>
+</html>
