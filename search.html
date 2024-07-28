@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mouse+Memoirs&family=Pacifico&family=Permanent+Marker&family=Poppins:wght@200;300;400;600;700&family=Secular+One&display=swap" rel="stylesheet">
+    <title>Search Interface</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .search-container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .search-container h1 {
+            font-family: 'Pacifico', cursive;
+            margin-bottom: 20px;
+        }
+        .search-container textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            font-size: 16px;
+            resize: none;
+        }
+        .search-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        .search-container button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <h1>FETCH WHAT YOU NEED !!</h1>
+        <textarea id="message" placeholder="Type your search query here..."></textarea>
+        <br>
+        <button id="searchButton">Search</button>
+    </div>
+
+    <script>
+        document.getElementById('searchButton').addEventListener('click', function() {
+            const query = document.getElementById('message').value;
+            const apiKey = 'AIzaSyD3608V3zVnpGao8ogQ4KkcgZ-m1eNOD8U';
+            const searchEngineId = '53a28ba5ccbf04f0c'; // Your Custom Search Engine ID
+            const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${encodeURIComponent(query)}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    let results = '';
+
+                    if (data.items) {
+                        data.items.forEach(item => {
+                            results += `Title: ${item.title}\nSnippet: ${item.snippet}\n\n`;
+                        });
+                    } else {
+                        results = 'No results found.';
+                    }
+
+                    document.getElementById('message').value = results;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('message').value = 'An error occurred while fetching search results.';
+                });
+        });
+    </script>
+</body>
+</html>
